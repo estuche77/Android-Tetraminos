@@ -8,11 +8,15 @@ import android.widget.ImageView;
 
 public class MainActivity extends AppCompatActivity {
 
+    private final int rowCount = 24;
+    private final int columnCount = 12;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        
+
     }
+    
 }
