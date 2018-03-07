@@ -2,9 +2,11 @@ package cr.ac.itcr.jlatouche.tetraminos;
 
 import android.content.Context;
 import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
+import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
 import android.widget.GridLayout;
 
 import java.util.ArrayList;
@@ -16,6 +18,7 @@ public class MainActivity extends AppCompatActivity {
     private final int columnCount = 12;
     private final int squareSize = 60;
     private GridLayout boardLayout;
+    private Tetris game;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,8 +32,34 @@ public class MainActivity extends AppCompatActivity {
         boardLayout.setBackgroundColor(Color.BLACK);
 
         //Initializing the game
-        Tetris game = new Tetris();
+        game = new Tetris();
         game.init();
+
+        //This will handle when a piece drops
+        final Handler handler = new Handler();
+        Runnable r = new Runnable() {
+            public void run() {
+                game.dropDown();
+                handler.postDelayed(this, 1000);
+            }
+        };
+        handler.postDelayed(r, 1000);
+    }
+
+    public void onMoveLeftClick(View view) {
+        game.move(-1);
+    }
+
+    public void onMoveRightClick(View view) {
+        game.move(1);
+    }
+
+    public void onMoveDownClick(View view) {
+        game.dropDown();
+    }
+
+    public void onRotateClick(View view) {
+        game.rotate(1);
     }
 
     private class Tetris {
@@ -103,9 +132,12 @@ public class MainActivity extends AppCompatActivity {
 
         //Creates a border around the board and initializes the dropping piece
         private void init() {
+
             board = new Square[rowCount][columnCount];
+
             for (int i = 0; i < rowCount; i++) {
                 for (int j = 0; j < columnCount; j++) {
+
                     Square square = new Square(context, i, j);
 
                     GridLayout.LayoutParams params = new GridLayout.LayoutParams();
@@ -126,10 +158,9 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
             newPiece();
-            repaint();
         }
 
-        // Put a new, random piece into the dropping position
+        //Puts a new, random piece into the dropping position
         public void newPiece() {
             pieceOrigin = new Square(context, 1, 5);
             rotation = 0;
@@ -139,6 +170,8 @@ public class MainActivity extends AppCompatActivity {
             }
             currentPiece = nextPieces.get(0);
             nextPieces.remove(0);
+
+            drawPiece();
         }
 
         // Collision test for the dropping piece
@@ -152,38 +185,42 @@ public class MainActivity extends AppCompatActivity {
         }
 
         // Rotate the piece clockwise or counterclockwise
-        public void rotate(int i) {
-            int newRotation = (rotation + i) % 4;
+        public void rotate(int r) {
+            erasePiece();
+            int newRotation = (rotation + r) % 4;
             if (newRotation < 0) {
                 newRotation = 3;
             }
             if (!collidesAt(pieceOrigin.i, pieceOrigin.j, newRotation)) {
                 rotation = newRotation;
             }
-            repaint();
+            drawPiece();
         }
 
         // Move the piece left or right
-        public void move(int i) {
-            if (!collidesAt(pieceOrigin.i, pieceOrigin.j  + i, rotation)) {
-                pieceOrigin.j += i;
+        public void move(int j) {
+            erasePiece();
+            if (!collidesAt(pieceOrigin.i, pieceOrigin.j + j, rotation)) {
+                pieceOrigin.j += j;
             }
-            repaint();
+            drawPiece();
         }
 
         // Drops the piece one line or fixes it to the well if it can't drop
         public void dropDown() {
+            erasePiece();
             if (!collidesAt(pieceOrigin.i + 1, pieceOrigin.j, rotation)) {
                 pieceOrigin.i += 1;
+                drawPiece();
             } else {
                 fixToWell();
             }
-            repaint();
         }
 
         // Make the dropping piece part of the well, so it is available for
         // collision detection.
         public void fixToWell() {
+            drawPiece();
             for (Square p : Tetraminos[currentPiece][rotation]) {
                 board[pieceOrigin.i + p.i][pieceOrigin.j + p.j].setBackgroundColor(tetraminoColors[currentPiece]);
             }
@@ -236,18 +273,16 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
-        // Draw the falling piece
-        private void drawPiece() {
+        public void erasePiece() {
             for (Square p : Tetraminos[currentPiece][rotation]) {
-                board[p.i + pieceOrigin.i][p.j + pieceOrigin.j].setBackgroundColor(tetraminoColors[currentPiece]);
+                board[p.i + pieceOrigin.i][p.j + pieceOrigin.j].setBackgroundColor(Color.BLACK);
             }
         }
 
-        public void repaint() {
-            // Paint the well
-
-            // Draw the currently falling piece
-            drawPiece();
+        public void drawPiece() {
+            for (Square p : Tetraminos[currentPiece][rotation]) {
+                board[p.i + pieceOrigin.i][p.j + pieceOrigin.j].setBackgroundColor(tetraminoColors[currentPiece]);
+            }
         }
     }
 }
