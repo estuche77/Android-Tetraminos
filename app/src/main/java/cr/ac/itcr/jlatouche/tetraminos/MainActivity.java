@@ -5,7 +5,6 @@ import android.graphics.Color;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.GridLayout;
 
@@ -66,55 +65,55 @@ public class MainActivity extends AppCompatActivity {
 
         private final Context context = getApplicationContext();
 
-        private final Square[][][] Tetraminos = {
+        private final Index[][][] Tetraminos = {
                 // I-Piece
                 {
-                        {new Square(context, 0, 1), new Square(context, 1, 1), new Square(context, 2, 1), new Square(context, 3, 1)},
-                        {new Square(context, 1, 0), new Square(context, 1, 1), new Square(context, 1, 2), new Square(context, 1, 3)},
-                        {new Square(context, 0, 1), new Square(context, 1, 1), new Square(context, 2, 1), new Square(context, 3, 1)},
-                        {new Square(context, 1, 0), new Square(context, 1, 1), new Square(context, 1, 2), new Square(context, 1, 3)}
+                        {new Index(0, 1), new Index(1, 1), new Index(2, 1), new Index(3, 1)},
+                        {new Index(1, 0), new Index(1, 1), new Index(1, 2), new Index(1, 3)},
+                        {new Index(0, 1), new Index(1, 1), new Index(2, 1), new Index(3, 1)},
+                        {new Index(1, 0), new Index(1, 1), new Index(1, 2), new Index(1, 3)}
                 },
                 // J-Piece
                 {
-                        {new Square(context, 0, 1), new Square(context, 1, 1), new Square(context, 2, 1), new Square(context, 2, 0)},
-                        {new Square(context, 1, 0), new Square(context, 1, 1), new Square(context, 1, 2), new Square(context, 2, 2)},
-                        {new Square(context, 0, 1), new Square(context, 1, 1), new Square(context, 2, 1), new Square(context, 0, 2)},
-                        {new Square(context, 1, 0), new Square(context, 1, 1), new Square(context, 1, 2), new Square(context, 0, 0)}
+                        {new Index(0, 1), new Index(1, 1), new Index(2, 1), new Index(2, 0)},
+                        {new Index(1, 0), new Index(1, 1), new Index(1, 2), new Index(2, 2)},
+                        {new Index(0, 1), new Index(1, 1), new Index(2, 1), new Index(0, 2)},
+                        {new Index(1, 0), new Index(1, 1), new Index(1, 2), new Index(0, 0)}
                 },
                 // L-Piece
                 {
-                        {new Square(context, 0, 1), new Square(context, 1, 1), new Square(context, 2, 1), new Square(context, 2, 2)},
-                        {new Square(context, 1, 0), new Square(context, 1, 1), new Square(context, 1, 2), new Square(context, 0, 2)},
-                        {new Square(context, 0, 1), new Square(context, 1, 1), new Square(context, 2, 1), new Square(context, 0, 0)},
-                        {new Square(context, 1, 0), new Square(context, 1, 1), new Square(context, 1, 2), new Square(context, 2, 0)}
+                        {new Index(0, 1), new Index(1, 1), new Index(2, 1), new Index(2, 2)},
+                        {new Index(1, 0), new Index(1, 1), new Index(1, 2), new Index(0, 2)},
+                        {new Index(0, 1), new Index(1, 1), new Index(2, 1), new Index(0, 0)},
+                        {new Index(1, 0), new Index(1, 1), new Index(1, 2), new Index(2, 0)}
                 },
                 // O-Piece
                 {
-                        {new Square(context, 0, 0), new Square(context, 0, 1), new Square(context, 1, 0), new Square(context, 1, 1)},
-                        {new Square(context, 0, 0), new Square(context, 0, 1), new Square(context, 1, 0), new Square(context, 1, 1)},
-                        {new Square(context, 0, 0), new Square(context, 0, 1), new Square(context, 1, 0), new Square(context, 1, 1)},
-                        {new Square(context, 0, 0), new Square(context, 0, 1), new Square(context, 1, 0), new Square(context, 1, 1)}
+                        {new Index(0, 0), new Index(0, 1), new Index(1, 0), new Index(1, 1)},
+                        {new Index(0, 0), new Index(0, 1), new Index(1, 0), new Index(1, 1)},
+                        {new Index(0, 0), new Index(0, 1), new Index(1, 0), new Index(1, 1)},
+                        {new Index(0, 0), new Index(0, 1), new Index(1, 0), new Index(1, 1)}
                 },
                 // S-Piece
                 {
-                        {new Square(context, 1, 0), new Square(context, 2, 0), new Square(context, 0, 1), new Square(context, 1, 1)},
-                        {new Square(context, 0, 0), new Square(context, 0, 1), new Square(context, 1, 1), new Square(context, 1, 2)},
-                        {new Square(context, 1, 0), new Square(context, 2, 0), new Square(context, 0, 1), new Square(context, 1, 1)},
-                        {new Square(context, 0, 0), new Square(context, 0, 1), new Square(context, 1, 1), new Square(context, 1, 2)}
+                        {new Index(1, 0), new Index(2, 0), new Index(0, 1), new Index(1, 1)},
+                        {new Index(0, 0), new Index(0, 1), new Index(1, 1), new Index(1, 2)},
+                        {new Index(1, 0), new Index(2, 0), new Index(0, 1), new Index(1, 1)},
+                        {new Index(0, 0), new Index(0, 1), new Index(1, 1), new Index(1, 2)}
                 },
                 // T-Piece
                 {
-                        {new Square(context, 1, 0), new Square(context, 0, 1), new Square(context, 1, 1), new Square(context, 2, 1)},
-                        {new Square(context, 1, 0), new Square(context, 0, 1), new Square(context, 1, 1), new Square(context, 1, 2)},
-                        {new Square(context, 0, 1), new Square(context, 1, 1), new Square(context, 2, 1), new Square(context, 1, 2)},
-                        {new Square(context, 1, 0), new Square(context, 1, 1), new Square(context, 2, 1), new Square(context, 1, 2)}
+                        {new Index(1, 0), new Index(0, 1), new Index(1, 1), new Index(2, 1)},
+                        {new Index(1, 0), new Index(0, 1), new Index(1, 1), new Index(1, 2)},
+                        {new Index(0, 1), new Index(1, 1), new Index(2, 1), new Index(1, 2)},
+                        {new Index(1, 0), new Index(1, 1), new Index(2, 1), new Index(1, 2)}
                 },
                 // Z-Piece
                 {
-                        {new Square(context, 0, 0), new Square(context, 1, 0), new Square(context, 1, 1), new Square(context, 2, 1)},
-                        {new Square(context, 1, 0), new Square(context, 0, 1), new Square(context, 1, 1), new Square(context, 0, 2)},
-                        {new Square(context, 0, 0), new Square(context, 1, 0), new Square(context, 1, 1), new Square(context, 2, 1)},
-                        {new Square(context, 1, 0), new Square(context, 0, 1), new Square(context, 1, 1), new Square(context, 0, 2)}
+                        {new Index(0, 0), new Index(1, 0), new Index(1, 1), new Index(2, 1)},
+                        {new Index(1, 0), new Index(0, 1), new Index(1, 1), new Index(0, 2)},
+                        {new Index(0, 0), new Index(1, 0), new Index(1, 1), new Index(2, 1)},
+                        {new Index(1, 0), new Index(0, 1), new Index(1, 1), new Index(0, 2)}
                 }
         };
 
@@ -122,7 +121,7 @@ public class MainActivity extends AppCompatActivity {
                 Color.CYAN, Color.BLUE, Color.WHITE, Color.YELLOW, Color.GREEN, Color.MAGENTA, Color.RED
         };
 
-        private Square pieceOrigin;
+        private Index pieceOrigin;
         private int currentPiece;
         private int rotation;
         private final ArrayList<Integer> nextPieces = new ArrayList<>();
@@ -162,7 +161,7 @@ public class MainActivity extends AppCompatActivity {
 
         //Puts a new, random piece into the dropping position
         public void newPiece() {
-            pieceOrigin = new Square(context, 1, 5);
+            pieceOrigin = new Index(1, 5);
             rotation = 0;
             if (nextPieces.isEmpty()) {
                 Collections.addAll(nextPieces, 0, 1, 2, 3, 4, 5, 6);
@@ -176,7 +175,7 @@ public class MainActivity extends AppCompatActivity {
 
         // Collision test for the dropping piece
         private boolean collidesAt(int i, int j, int rotation) {
-            for (Square p : Tetraminos[currentPiece][rotation]) {
+            for (Index p : Tetraminos[currentPiece][rotation]) {
                 if (board[p.i + i][p.j + j].getColor() != Color.BLACK) {
                     return true;
                 }
@@ -221,7 +220,7 @@ public class MainActivity extends AppCompatActivity {
         // collision detection.
         public void fixToWell() {
             drawPiece();
-            for (Square p : Tetraminos[currentPiece][rotation]) {
+            for (Index p : Tetraminos[currentPiece][rotation]) {
                 board[pieceOrigin.i + p.i][pieceOrigin.j + p.j].setBackgroundColor(tetraminoColors[currentPiece]);
             }
             clearRows();
@@ -274,13 +273,13 @@ public class MainActivity extends AppCompatActivity {
         }
 
         public void erasePiece() {
-            for (Square p : Tetraminos[currentPiece][rotation]) {
+            for (Index p : Tetraminos[currentPiece][rotation]) {
                 board[p.i + pieceOrigin.i][p.j + pieceOrigin.j].setBackgroundColor(Color.BLACK);
             }
         }
 
         public void drawPiece() {
-            for (Square p : Tetraminos[currentPiece][rotation]) {
+            for (Index p : Tetraminos[currentPiece][rotation]) {
                 board[p.i + pieceOrigin.i][p.j + pieceOrigin.j].setBackgroundColor(tetraminoColors[currentPiece]);
             }
         }

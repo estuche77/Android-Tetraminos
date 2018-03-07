@@ -11,32 +11,22 @@ import android.view.View;
 
 public class Square extends View {
 
-    public int i;
-    public int j;
     private int color;
 
     public Square(Context context, int i, int j) {
         super(context);
-        this.i = i;
-        this.j = j;
     }
 
     public Square(Context context, @Nullable AttributeSet attrs, int i, int j) {
         super(context, attrs);
-        this.i = i;
-        this.j = j;
     }
 
     public Square(Context context, @Nullable AttributeSet attrs, int defStyleAttr, int i, int j) {
         super(context, attrs, defStyleAttr);
-        this.i = i;
-        this.j = j;
     }
 
     public Square(Context context, @Nullable AttributeSet attrs, int defStyleAttr, int defStyleRes, int i, int j) {
         super(context, attrs, defStyleAttr, defStyleRes);
-        this.i = i;
-        this.j = j;
     }
 
     @Override
