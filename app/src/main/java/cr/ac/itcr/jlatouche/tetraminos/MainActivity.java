@@ -8,7 +8,6 @@ import android.util.Log;
 import android.view.View;
 import android.widget.GridLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -127,6 +126,7 @@ public class MainActivity extends AppCompatActivity {
         private final ArrayList<Integer> nextPieces = new ArrayList<>();
         private Runnable autoDropDown;
         private final Handler handler = new Handler();
+        private boolean gameOver;
 
         //Visuals
         private long score = 0;
@@ -134,6 +134,8 @@ public class MainActivity extends AppCompatActivity {
 
         //Creates a border around the board and initializes the dropping piece
         private void init() {
+            gameOver = false;
+
             board = new SquareView[rowCount][columnCount];
 
             //This will initialize the layout
@@ -167,9 +169,10 @@ public class MainActivity extends AppCompatActivity {
         private void automaticDropDown() {
             autoDropDown = new Runnable() {
                 public void run() {
-                    game.dropDown();
-                    Log.d("automaticDropDown: ", "run: ");
-                    handler.postDelayed(this, 1000);
+                    if (!gameOver){
+                        game.dropDown();
+                        handler.postDelayed(this, 1000);
+                    }
                 }
             };
             handler.postDelayed(autoDropDown, 1000);
@@ -188,7 +191,7 @@ public class MainActivity extends AppCompatActivity {
             currentPiece = nextPieces.get(0);
             nextPieces.remove(0);
 
-            if (collidesAt(pieceOrigin.i, pieceOrigin.j, rotation)) {
+            if (collidesAt(pieceOrigin.i + 1, pieceOrigin.j, rotation)) {
                 gameEnded();
             }
             else {
@@ -198,8 +201,10 @@ public class MainActivity extends AppCompatActivity {
 
         //Ends the game by stopping the auto drop down runnable and showing the score
         private void gameEnded() {
+            gameOver = true;
             handler.removeCallbacksAndMessages(autoDropDown);
-            Log.d("12", "gameEnded: ");
+            handler.postDelayed(autoDropDown, 5000);
+            Log.d("Terminado", "gameEnded: ");
         }
 
         //Collision test for the dropping piece
