@@ -13,6 +13,7 @@ public class Square extends View {
 
     public int i;
     public int j;
+    private int color;
 
     public Square(Context context, int i, int j) {
         super(context);
@@ -36,5 +37,15 @@ public class Square extends View {
         super(context, attrs, defStyleAttr, defStyleRes);
         this.i = i;
         this.j = j;
+    }
+
+    @Override
+    public void setBackgroundColor(int color) {
+        super.setBackgroundColor(color);
+        this.color = color;
+    }
+
+    public int getColor() {
+        return color;
     }
 }

@@ -2,8 +2,10 @@ package cr.ac.itcr.jlatouche.tetraminos;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.widget.GridLayout;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -12,12 +14,21 @@ public class MainActivity extends AppCompatActivity {
 
     private final int rowCount = 24;
     private final int columnCount = 12;
+    private final int squareSize = 60;
+    private GridLayout boardLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        //Setting the board
+        boardLayout = findViewById(R.id.boardLayout);
+        boardLayout.setRowCount(rowCount);
+        boardLayout.setColumnCount(columnCount);
+        boardLayout.setBackgroundColor(Color.BLACK);
+
+        //Initializing the game
         Tetris game = new Tetris();
         game.init();
     }
@@ -88,18 +99,30 @@ public class MainActivity extends AppCompatActivity {
         private final ArrayList<Integer> nextPieces = new ArrayList<>();
 
         private long score;
-        private int[][] well;
+        private Square[][] board;
 
-        // Creates a border around the well and initializes the dropping piece
+        //Creates a border around the board and initializes the dropping piece
         private void init() {
-            well = new int[rowCount][columnCount];
+            board = new Square[rowCount][columnCount];
             for (int i = 0; i < rowCount; i++) {
                 for (int j = 0; j < columnCount; j++) {
+                    Square square = new Square(context, i, j);
+
+                    GridLayout.LayoutParams params = new GridLayout.LayoutParams();
+                    params.width = squareSize;
+                    params.height = squareSize;
+                    params.setMargins(1, 1, 1, 1);
+
+                    square.setLayoutParams(params);
+                    boardLayout.addView(square);
+
                     if (i == 0 || i == rowCount - 1 || j == 0 || j == columnCount - 1) {
-                        well[i][j] = Color.GRAY;
+                        square.setBackgroundColor(Color.GRAY);
                     } else {
-                        well[i][j] = Color.BLACK;
+                        square.setBackgroundColor(Color.BLACK);
                     }
+
+                    board[i][j] = square;
                 }
             }
             newPiece();
@@ -119,9 +142,9 @@ public class MainActivity extends AppCompatActivity {
         }
 
         // Collision test for the dropping piece
-        private boolean collidesAt(int x, int y, int rotation) {
+        private boolean collidesAt(int i, int j, int rotation) {
             for (Square p : Tetraminos[currentPiece][rotation]) {
-                if (well[p.i + x][p.j + y] != Color.BLACK) {
+                if (board[p.i + i][p.j + j].getColor() != Color.BLACK) {
                     return true;
                 }
             }
@@ -162,7 +185,7 @@ public class MainActivity extends AppCompatActivity {
         // collision detection.
         public void fixToWell() {
             for (Square p : Tetraminos[currentPiece][rotation]) {
-                well[pieceOrigin.i + p.i][pieceOrigin.j + p.j] = tetraminoColors[currentPiece];
+                board[pieceOrigin.i + p.i][pieceOrigin.j + p.j].setBackgroundColor(tetraminoColors[currentPiece]);
             }
             clearRows();
             newPiece();
@@ -171,7 +194,7 @@ public class MainActivity extends AppCompatActivity {
         public void deleteRow(int row) {
             for (int i = row - 1; i > 0; i--) {
                 for (int j = 1; j < columnCount - 1; j++) {
-                    well[i + 1][j] = well[i][j];
+                    board[i + 1][j].setBackgroundColor(board[i][j].getColor());
                 }
             }
         }
@@ -185,7 +208,7 @@ public class MainActivity extends AppCompatActivity {
             for (int i = 1; i < rowCount - 1; i++) {
                 gap = false;
                 for (int j = 1; j < columnCount - 1; j++) {
-                    if (well[i][j] == Color.BLACK) {
+                    if (board[i][j].getColor() == Color.BLACK) {
                         gap = true;
                         break;
                     }
@@ -212,29 +235,19 @@ public class MainActivity extends AppCompatActivity {
                     break;
             }
         }
-        /**
+
         // Draw the falling piece
         private void drawPiece() {
             for (Square p : Tetraminos[currentPiece][rotation]) {
-                imageGrid[p.i + pieceOrigin.i][p.j + pieceOrigin.j].setBackgroundColor(tetraminoColors[currentPiece]);
+                board[p.i + pieceOrigin.i][p.j + pieceOrigin.j].setBackgroundColor(tetraminoColors[currentPiece]);
             }
         }
-         **/
 
         public void repaint() {
-            /**
             // Paint the well
 
-            for (int i = 0; i < rowCount; i++) {
-                for (int j = 0; j < columnCount; j++) {
-                    imageGrid[i][j].setBackgroundColor(well[i][j]);
-                }
-            }
             // Draw the currently falling piece
             drawPiece();
-             **/
         }
-
-
     }
 }

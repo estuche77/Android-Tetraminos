@@ -33,7 +33,7 @@
     </LinearLayout>
 
     <GridLayout
-        android:id="@+id/gridLayout"
+        android:id="@+id/boardLayout"
         android:layout_width="match_parent"
         android:layout_height="450dp"
         android:layout_below="@+id/statusInfoLayout">
@@ -45,34 +45,35 @@
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:orientation="horizontal"
-        android:layout_below="@+id/gridLayout">
+        android:layout_below="@+id/boardLayout">
 
         <Button
             android:id="@+id/moveLeft"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="<-" />
+            android:text="Left" />
 
         <Button
             android:id="@+id/moveRight"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="->" />
+            android:text="Right" />
 
         <Button
             android:id="@+id/moveDown"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="!" />
+            android:text="Down" />
 
         <Button
             android:id="@+id/rotate"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="@" />
+            android:text="Rotate" />
     </LinearLayout>
-</>
+
+</RelativeLayout>
