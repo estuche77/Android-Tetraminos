@@ -8,6 +8,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.GridLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -124,7 +125,6 @@ public class MainActivity extends AppCompatActivity {
 
         //Game state variables
         private final ArrayList<Integer> nextPieces = new ArrayList<>();
-        private int dropCounter;
         private Runnable autoDropDown;
         private final Handler handler = new Handler();
 
@@ -168,7 +168,7 @@ public class MainActivity extends AppCompatActivity {
             autoDropDown = new Runnable() {
                 public void run() {
                     game.dropDown();
-                    Log.d("meh", "run: " + dropCounter);
+                    Log.d("automaticDropDown: ", "run: ");
                     handler.postDelayed(this, 1000);
                 }
             };
@@ -178,8 +178,9 @@ public class MainActivity extends AppCompatActivity {
         //Puts a new, random piece into the dropping position
         private void newPiece() {
 
-            pieceOrigin = new Index(1, 5);
+            pieceOrigin = new Index(1, (columnCount / 2) - 1 );
             rotation = 0;
+
             if (nextPieces.isEmpty() || nextPieces.size() == 1) {
                 Collections.addAll(nextPieces, 0, 1, 2, 3, 4, 5, 6);
                 Collections.shuffle(nextPieces);
@@ -187,12 +188,23 @@ public class MainActivity extends AppCompatActivity {
             currentPiece = nextPieces.get(0);
             nextPieces.remove(0);
 
-            dropCounter = 0;
-            drawPiece();
+            if (collidesAt(pieceOrigin.i, pieceOrigin.j, rotation)) {
+                gameEnded();
+            }
+            else {
+                drawPiece();
+            }
         }
 
-        // Collision test for the dropping piece
+        //Ends the game by stopping the auto drop down runnable and showing the score
+        private void gameEnded() {
+            handler.removeCallbacksAndMessages(autoDropDown);
+            Log.d("12", "gameEnded: ");
+        }
+
+        //Collision test for the dropping piece
         private boolean collidesAt(int i, int j, int rotation) {
+            erasePiece();
             for (Index p : Tetraminos[currentPiece][rotation]) {
                 if (board[p.i + i][p.j + j].getColor() != Color.BLACK) {
                     return true;
@@ -201,9 +213,8 @@ public class MainActivity extends AppCompatActivity {
             return false;
         }
 
-        // Rotate the piece clockwise or counterclockwise
+        //Rotate the piece clockwise by adding 1
         public void rotate(int r) {
-            erasePiece();
             int newRotation = (rotation + r) % 4;
             if (newRotation < 0) {
                 newRotation = 3;
@@ -214,54 +225,39 @@ public class MainActivity extends AppCompatActivity {
             drawPiece();
         }
 
-        // Move the piece left or right
+        //Move the piece left or right
         public void move(int j) {
-            erasePiece();
             if (!collidesAt(pieceOrigin.i, pieceOrigin.j + j, rotation)) {
                 pieceOrigin.j += j;
             }
             drawPiece();
         }
 
-        // Drops the piece one line or fixes it to the well if it can't drop
+        //Drops the piece one line or fixes it to the board if it can't drop
         public void dropDown() {
-            erasePiece();
             if (!collidesAt(pieceOrigin.i + 1, pieceOrigin.j, rotation)) {
                 pieceOrigin.i += 1;
-                dropCounter++;
                 drawPiece();
             } else {
                 fixToWell();
+                newPiece();
             }
         }
 
-        // Make the dropping piece part of the board, so it is available for
-        // collision detection.
+        //Make the dropping piece part of the board, so it is available for collision detection
         private void fixToWell() {
             drawPiece();
             for (Index p : Tetraminos[currentPiece][rotation]) {
                 board[pieceOrigin.i + p.i][pieceOrigin.j + p.j].setBackgroundColor(tetraminosColors[currentPiece]);
             }
             clearRows();
-            checkIfEnded();
         }
 
-        private void checkIfEnded() {
-            //If the piece at least was dropped by one
-            if (dropCounter > 0) {
-                newPiece();
-            }
-            //Else ends the game by stopping the auto drop down
-            else {
-                handler.removeCallbacksAndMessages(autoDropDown);
-            }
-        }
-
+        //Delete the selected row
         private void deleteRow(int row) {
             for (int i = row - 1; i > 0; i--) {
                 for (int j = 1; j < columnCount - 1; j++) {
                     board[i + 1][j].setBackgroundColor(board[i][j].getColor());
-                    Log.d("l", "deleteRow: "+ (i + 1));
                 }
             }
         }
