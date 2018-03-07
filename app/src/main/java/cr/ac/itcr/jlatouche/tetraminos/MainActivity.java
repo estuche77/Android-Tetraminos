@@ -1,12 +1,13 @@
 package cr.ac.itcr.jlatouche.tetraminos;
 
-import android.content.Context;
 import android.graphics.Color;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.GridLayout;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -17,6 +18,7 @@ public class MainActivity extends AppCompatActivity {
     private final int columnCount = 12;
     private final int squareSize = 60;
     private GridLayout boardLayout;
+    private TextView scoreTextView;
     private Tetris game;
 
     @Override
@@ -30,19 +32,13 @@ public class MainActivity extends AppCompatActivity {
         boardLayout.setColumnCount(columnCount);
         boardLayout.setBackgroundColor(Color.BLACK);
 
+        //Setting the score textView
+        scoreTextView = findViewById(R.id.scoreTextView);
+
         //Initializing the game
         game = new Tetris();
         game.init();
 
-        //This will handle when a piece drops
-        final Handler handler = new Handler();
-        Runnable r = new Runnable() {
-            public void run() {
-                game.dropDown();
-                handler.postDelayed(this, 1000);
-            }
-        };
-        handler.postDelayed(r, 1000);
     }
 
     public void onMoveLeftClick(View view) {
@@ -63,8 +59,7 @@ public class MainActivity extends AppCompatActivity {
 
     private class Tetris {
 
-        private final Context context = getApplicationContext();
-
+        //All the pieces, with all their positions and all their squares
         private final Index[][][] Tetraminos = {
                 // I-Piece
                 {
@@ -117,27 +112,35 @@ public class MainActivity extends AppCompatActivity {
                 }
         };
 
-        private final int[] tetraminoColors = {
+        //All the color by piece
+        private final int[] tetraminosColors = {
                 Color.CYAN, Color.BLUE, Color.WHITE, Color.YELLOW, Color.GREEN, Color.MAGENTA, Color.RED
         };
 
+        //The piece state
         private Index pieceOrigin;
         private int currentPiece;
         private int rotation;
-        private final ArrayList<Integer> nextPieces = new ArrayList<>();
 
-        private long score;
+        //Game state variables
+        private final ArrayList<Integer> nextPieces = new ArrayList<>();
+        private int dropCounter;
+        private Runnable autoDropDown;
+        private final Handler handler = new Handler();
+
+        //Visuals
+        private long score = 0;
         private Square[][] board;
 
         //Creates a border around the board and initializes the dropping piece
         private void init() {
-
             board = new Square[rowCount][columnCount];
 
+            //This will initialize the layout
             for (int i = 0; i < rowCount; i++) {
                 for (int j = 0; j < columnCount; j++) {
 
-                    Square square = new Square(context, i, j);
+                    Square square = new Square(getApplicationContext(), i, j);
 
                     GridLayout.LayoutParams params = new GridLayout.LayoutParams();
                     params.width = squareSize;
@@ -157,19 +160,33 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
             newPiece();
+            automaticDropDown();
+        }
+
+        //This will handle when a piece drops
+        private void automaticDropDown() {
+            autoDropDown = new Runnable() {
+                public void run() {
+                    game.dropDown();
+                    handler.postDelayed(this, 1000);
+                }
+            };
+            handler.postDelayed(autoDropDown, 1000);
         }
 
         //Puts a new, random piece into the dropping position
         public void newPiece() {
+
             pieceOrigin = new Index(1, 5);
             rotation = 0;
-            if (nextPieces.isEmpty()) {
+            if (nextPieces.isEmpty() || nextPieces.size() == 1) {
                 Collections.addAll(nextPieces, 0, 1, 2, 3, 4, 5, 6);
                 Collections.shuffle(nextPieces);
             }
             currentPiece = nextPieces.get(0);
             nextPieces.remove(0);
 
+            dropCounter = 0;
             drawPiece();
         }
 
@@ -211,6 +228,7 @@ public class MainActivity extends AppCompatActivity {
             if (!collidesAt(pieceOrigin.i + 1, pieceOrigin.j, rotation)) {
                 pieceOrigin.i += 1;
                 drawPiece();
+                dropCounter++;
             } else {
                 fixToWell();
             }
@@ -221,16 +239,25 @@ public class MainActivity extends AppCompatActivity {
         public void fixToWell() {
             drawPiece();
             for (Index p : Tetraminos[currentPiece][rotation]) {
-                board[pieceOrigin.i + p.i][pieceOrigin.j + p.j].setBackgroundColor(tetraminoColors[currentPiece]);
+                board[pieceOrigin.i + p.i][pieceOrigin.j + p.j].setBackgroundColor(tetraminosColors[currentPiece]);
             }
             clearRows();
-            newPiece();
+
+            //If the piece al least dropped by one
+            if (dropCounter > 0) {
+                newPiece();
+            }
+            //Else ends the game by stopping the auto drop down
+            else {
+                handler.removeCallbacks(autoDropDown);
+            }
         }
 
         public void deleteRow(int row) {
             for (int i = row - 1; i > 0; i--) {
                 for (int j = 1; j < columnCount - 1; j++) {
                     board[i + 1][j].setBackgroundColor(board[i][j].getColor());
+                    Log.d("l", "deleteRow: "+ (i + 1));
                 }
             }
         }
@@ -251,8 +278,7 @@ public class MainActivity extends AppCompatActivity {
                 }
                 if (!gap) {
                     deleteRow(i);
-                    i += 1;
-                    numClears += 1;
+                    numClears++;
                 }
             }
 
@@ -272,16 +298,19 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
+        //Erases the piece before checking for collisions
         public void erasePiece() {
             for (Index p : Tetraminos[currentPiece][rotation]) {
                 board[p.i + pieceOrigin.i][p.j + pieceOrigin.j].setBackgroundColor(Color.BLACK);
             }
         }
 
+        //Draw the piece again
         public void drawPiece() {
             for (Index p : Tetraminos[currentPiece][rotation]) {
-                board[p.i + pieceOrigin.i][p.j + pieceOrigin.j].setBackgroundColor(tetraminoColors[currentPiece]);
+                board[p.i + pieceOrigin.i][p.j + pieceOrigin.j].setBackgroundColor(tetraminosColors[currentPiece]);
             }
+            scoreTextView.setText(String.valueOf(score));
         }
     }
 }
