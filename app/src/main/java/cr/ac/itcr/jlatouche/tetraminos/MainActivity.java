@@ -130,33 +130,33 @@ public class MainActivity extends AppCompatActivity {
 
         //Visuals
         private long score = 0;
-        private Square[][] board;
+        private SquareView[][] board;
 
         //Creates a border around the board and initializes the dropping piece
         private void init() {
-            board = new Square[rowCount][columnCount];
+            board = new SquareView[rowCount][columnCount];
 
             //This will initialize the layout
             for (int i = 0; i < rowCount; i++) {
                 for (int j = 0; j < columnCount; j++) {
 
-                    Square square = new Square(getApplicationContext(), i, j);
+                    SquareView squareView = new SquareView(getApplicationContext());
 
                     GridLayout.LayoutParams params = new GridLayout.LayoutParams();
                     params.width = squareSize;
                     params.height = squareSize;
                     params.setMargins(1, 1, 1, 1);
 
-                    square.setLayoutParams(params);
-                    boardLayout.addView(square);
+                    squareView.setLayoutParams(params);
+                    boardLayout.addView(squareView);
 
                     if (i == 0 || i == rowCount - 1 || j == 0 || j == columnCount - 1) {
-                        square.setBackgroundColor(Color.GRAY);
+                        squareView.setBackgroundColor(Color.GRAY);
                     } else {
-                        square.setBackgroundColor(Color.BLACK);
+                        squareView.setBackgroundColor(Color.BLACK);
                     }
 
-                    board[i][j] = square;
+                    board[i][j] = squareView;
                 }
             }
             newPiece();
@@ -168,6 +168,7 @@ public class MainActivity extends AppCompatActivity {
             autoDropDown = new Runnable() {
                 public void run() {
                     game.dropDown();
+                    Log.d("meh", "run: " + dropCounter);
                     handler.postDelayed(this, 1000);
                 }
             };
@@ -175,7 +176,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         //Puts a new, random piece into the dropping position
-        public void newPiece() {
+        private void newPiece() {
 
             pieceOrigin = new Index(1, 5);
             rotation = 0;
@@ -227,33 +228,36 @@ public class MainActivity extends AppCompatActivity {
             erasePiece();
             if (!collidesAt(pieceOrigin.i + 1, pieceOrigin.j, rotation)) {
                 pieceOrigin.i += 1;
-                drawPiece();
                 dropCounter++;
+                drawPiece();
             } else {
                 fixToWell();
             }
         }
 
-        // Make the dropping piece part of the well, so it is available for
+        // Make the dropping piece part of the board, so it is available for
         // collision detection.
-        public void fixToWell() {
+        private void fixToWell() {
             drawPiece();
             for (Index p : Tetraminos[currentPiece][rotation]) {
                 board[pieceOrigin.i + p.i][pieceOrigin.j + p.j].setBackgroundColor(tetraminosColors[currentPiece]);
             }
             clearRows();
+            checkIfEnded();
+        }
 
-            //If the piece al least dropped by one
+        private void checkIfEnded() {
+            //If the piece at least was dropped by one
             if (dropCounter > 0) {
                 newPiece();
             }
             //Else ends the game by stopping the auto drop down
             else {
-                handler.removeCallbacks(autoDropDown);
+                handler.removeCallbacksAndMessages(autoDropDown);
             }
         }
 
-        public void deleteRow(int row) {
+        private void deleteRow(int row) {
             for (int i = row - 1; i > 0; i--) {
                 for (int j = 1; j < columnCount - 1; j++) {
                     board[i + 1][j].setBackgroundColor(board[i][j].getColor());
@@ -264,7 +268,7 @@ public class MainActivity extends AppCompatActivity {
 
         // Clear completed rows from the field and award score according to
         // the number of simultaneously cleared rows.
-        public void clearRows() {
+        private void clearRows() {
             boolean gap;
             int numClears = 0;
 
@@ -299,14 +303,14 @@ public class MainActivity extends AppCompatActivity {
         }
 
         //Erases the piece before checking for collisions
-        public void erasePiece() {
+        private void erasePiece() {
             for (Index p : Tetraminos[currentPiece][rotation]) {
                 board[p.i + pieceOrigin.i][p.j + pieceOrigin.j].setBackgroundColor(Color.BLACK);
             }
         }
 
         //Draw the piece again
-        public void drawPiece() {
+        private void drawPiece() {
             for (Index p : Tetraminos[currentPiece][rotation]) {
                 board[p.i + pieceOrigin.i][p.j + pieceOrigin.j].setBackgroundColor(tetraminosColors[currentPiece]);
             }
