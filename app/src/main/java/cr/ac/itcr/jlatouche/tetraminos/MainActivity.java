@@ -76,7 +76,7 @@ public class MainActivity extends AppCompatActivity {
         AlertDialog.Builder dlgAlert  = new AlertDialog.Builder(this);
         dlgAlert.setTitle("Game over!");
         dlgAlert.setMessage("Your score was " + score);
-        dlgAlert.setCancelable(true);
+        dlgAlert.setCancelable(false);
         dlgAlert.setPositiveButton("New game",
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
@@ -133,7 +133,7 @@ public class MainActivity extends AppCompatActivity {
                         {new Index(0, 0), new Index(0, 1), new Index(1, 0), new Index(1, 1)},
                         {new Index(0, 0), new Index(0, 1), new Index(1, 0), new Index(1, 1)}
                 },
-                // S-Piece
+                // Z-Piece
                 {
                         {new Index(1, 0), new Index(2, 0), new Index(0, 1), new Index(1, 1)},
                         {new Index(0, 0), new Index(0, 1), new Index(1, 1), new Index(1, 2)},
@@ -147,7 +147,7 @@ public class MainActivity extends AppCompatActivity {
                         {new Index(0, 1), new Index(1, 1), new Index(2, 1), new Index(1, 2)},
                         {new Index(1, 0), new Index(1, 1), new Index(2, 1), new Index(1, 2)}
                 },
-                // Z-Piece
+                // S-Piece
                 {
                         {new Index(0, 0), new Index(1, 0), new Index(1, 1), new Index(2, 1)},
                         {new Index(1, 0), new Index(0, 1), new Index(1, 1), new Index(0, 2)},
@@ -265,14 +265,18 @@ public class MainActivity extends AppCompatActivity {
             pieceOrigin = new Index(1, (columnCount / 2) - 1 );
             rotation = 0;
 
-            if (nextPieces.isEmpty() || nextPieces.size() == 1) {
+            if (nextPieces.isEmpty()) {
                 Collections.addAll(nextPieces, 0, 1, 2, 3, 4, 5, 6);
                 Collections.shuffle(nextPieces);
             }
             currentPiece = nextPieces.get(0);
-            previewNextPiece(nextPieces.get(1));
-
             nextPieces.remove(0);
+
+            if (nextPieces.isEmpty()) {
+                Collections.addAll(nextPieces, 0, 1, 2, 3, 4, 5, 6);
+                Collections.shuffle(nextPieces);
+            }
+            previewNextPiece(nextPieces.get(0));
 
             if (collidesAt(pieceOrigin.i + 1, pieceOrigin.j, rotation)) {
                 finalizeGame();
@@ -300,13 +304,13 @@ public class MainActivity extends AppCompatActivity {
                     nextPieceImage.setImageResource(R.drawable.piece_o);
                     break;
                 case 4:
-                    nextPieceImage.setImageResource(R.drawable.piece_s);
+                    nextPieceImage.setImageResource(R.drawable.piece_z);
                     break;
                 case 5:
                     nextPieceImage.setImageResource(R.drawable.piece_t);
                     break;
                 case 6:
-                    nextPieceImage.setImageResource(R.drawable.piece_z);
+                    nextPieceImage.setImageResource(R.drawable.piece_s);
                     break;
                 default:
 

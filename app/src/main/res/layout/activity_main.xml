@@ -20,16 +20,17 @@
             android:layout_weight="1"
             android:fontFamily="@font/roboto_thin"
             android:paddingRight="10dp"
+            android:paddingTop="10dp"
             android:text="0"
             android:textAlignment="textEnd"
-            android:textSize="26sp"
+            android:textSize="30sp"
             android:background="#000000"/>
 
         <ImageView
             android:id="@+id/nextImageView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_weight="1"
+            android:layout_weight="0.3"
             android:background="@android:color/black"
             app:srcCompat="@android:color/black" />
 
