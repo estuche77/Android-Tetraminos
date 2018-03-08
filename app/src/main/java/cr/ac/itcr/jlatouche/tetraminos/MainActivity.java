@@ -1,7 +1,9 @@
 package cr.ac.itcr.jlatouche.tetraminos;
 
+import android.content.DialogInterface;
 import android.graphics.Color;
 import android.os.Handler;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -59,7 +61,7 @@ public class MainActivity extends AppCompatActivity {
         game.rotate(1);
     }
 
-    public void onGameOver() {
+    public void onGameOver(long score) {
         Button leftButton = findViewById(R.id.moveLeft);
         Button rightButton = findViewById(R.id.moveRight);
         Button downButton = findViewById(R.id.moveDown);
@@ -69,6 +71,18 @@ public class MainActivity extends AppCompatActivity {
         rightButton.setEnabled(false);
         downButton.setEnabled(false);
         rotateButton.setEnabled(false);
+
+        AlertDialog.Builder dlgAlert  = new AlertDialog.Builder(this);
+        dlgAlert.setTitle("Game over!");
+        dlgAlert.setMessage("Your score was " + score);
+        dlgAlert.setCancelable(true);
+        dlgAlert.setPositiveButton("New game",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        onGameStart();
+                    }
+                });
+        dlgAlert.create().show();
     }
 
     public void onGameStart() {
@@ -82,6 +96,7 @@ public class MainActivity extends AppCompatActivity {
         downButton.setEnabled(true);
         rotateButton.setEnabled(true);
 
+        game = new Tetris();
         game.init();
     }
 
@@ -172,13 +187,18 @@ public class MainActivity extends AppCompatActivity {
 
         //Creates a border around the board and initializes the dropping piece
         private void init() {
+            //Cleaning the board
+            boardLayout.removeAllViews();
+
             //Set state variables
             nextPieces = new ArrayList<>();
             gameOver = false;
 
             //And visuals
             score = 0;
+            scoreTextView.setText(String.valueOf(score));
             board = new SquareView[rowCount][columnCount];
+
 
             //This will initialize the layout
             for (int i = 0; i < rowCount; i++) {
@@ -263,7 +283,7 @@ public class MainActivity extends AppCompatActivity {
         private void finalizeGame() {
             gameOver = true;
             handler.removeCallbacksAndMessages(autoDropDown);
-            onGameOver();
+            onGameOver(score);
         }
 
         //Collision test for the dropping piece
