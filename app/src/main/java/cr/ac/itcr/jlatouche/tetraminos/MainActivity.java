@@ -171,6 +171,16 @@ public class MainActivity extends AppCompatActivity {
                 Color.CYAN, Color.BLUE, Color.WHITE, Color.YELLOW, Color.GREEN, Color.MAGENTA, Color.RED
         };
 
+        private final int[] TetraminosImage = {
+                R.drawable.piece_i,
+                R.drawable.piece_j,
+                R.drawable.piece_l,
+                R.drawable.piece_o,
+                R.drawable.piece_z,
+                R.drawable.piece_t,
+                R.drawable.piece_s
+        };
+
         //The piece state
         private Index pieceOrigin;
         private int currentPiece;
@@ -289,32 +299,7 @@ public class MainActivity extends AppCompatActivity {
         //Will draw the following piece
         private void previewNextPiece(int nextPiece) {
             ImageView nextPieceImage = findViewById(R.id.nextImageView);
-
-            switch (nextPiece) {
-                case 0:
-                    nextPieceImage.setImageResource(R.drawable.piece_i);
-                    break;
-                case 1:
-                    nextPieceImage.setImageResource(R.drawable.piece_j);
-                    break;
-                case 2:
-                    nextPieceImage.setImageResource(R.drawable.piece_l);
-                    break;
-                case 3:
-                    nextPieceImage.setImageResource(R.drawable.piece_o);
-                    break;
-                case 4:
-                    nextPieceImage.setImageResource(R.drawable.piece_z);
-                    break;
-                case 5:
-                    nextPieceImage.setImageResource(R.drawable.piece_t);
-                    break;
-                case 6:
-                    nextPieceImage.setImageResource(R.drawable.piece_s);
-                    break;
-                default:
-
-            }
+            nextPieceImage.setImageResource(TetraminosImage[nextPiece]);
         }
 
         //Ends the game by stopping the auto drop down runnable and showing the score
