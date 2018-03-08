@@ -6,15 +6,17 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.GridLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Collections;
 
 public class MainActivity extends AppCompatActivity {
 
-    private final int rowCount = 24;
+    private final int rowCount = 25;
     private final int columnCount = 12;
     private final int squareSize = 60;
     private GridLayout boardLayout;
@@ -55,6 +57,32 @@ public class MainActivity extends AppCompatActivity {
 
     public void onRotateClick(View view) {
         game.rotate(1);
+    }
+
+    public void onGameOver() {
+        Button leftButton = findViewById(R.id.moveLeft);
+        Button rightButton = findViewById(R.id.moveRight);
+        Button downButton = findViewById(R.id.moveDown);
+        Button rotateButton = findViewById(R.id.rotate);
+
+        leftButton.setEnabled(false);
+        rightButton.setEnabled(false);
+        downButton.setEnabled(false);
+        rotateButton.setEnabled(false);
+    }
+
+    public void onGameStart() {
+        Button leftButton = findViewById(R.id.moveLeft);
+        Button rightButton = findViewById(R.id.moveRight);
+        Button downButton = findViewById(R.id.moveDown);
+        Button rotateButton = findViewById(R.id.rotate);
+
+        leftButton.setEnabled(true);
+        rightButton.setEnabled(true);
+        downButton.setEnabled(true);
+        rotateButton.setEnabled(true);
+
+        game.init();
     }
 
     private class Tetris {
@@ -123,19 +151,23 @@ public class MainActivity extends AppCompatActivity {
         private int rotation;
 
         //Game state variables
-        private final ArrayList<Integer> nextPieces = new ArrayList<>();
+        private ArrayList<Integer> nextPieces;
         private Runnable autoDropDown;
         private final Handler handler = new Handler();
         private boolean gameOver;
 
         //Visuals
-        private long score = 0;
+        private long score;
         private SquareView[][] board;
 
         //Creates a border around the board and initializes the dropping piece
         private void init() {
+            //Set state variables
+            nextPieces = new ArrayList<>();
             gameOver = false;
 
+            //And visuals
+            score = 0;
             board = new SquareView[rowCount][columnCount];
 
             //This will initialize the layout
@@ -162,7 +194,10 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
             newPiece();
+
+            //Automated task
             automaticDropDown();
+            automaticTimeCount();
         }
 
         //This will handle when a piece drops
@@ -176,6 +211,21 @@ public class MainActivity extends AppCompatActivity {
                 }
             };
             handler.postDelayed(autoDropDown, 1000);
+        }
+
+        //This will handle a timer
+        private void automaticTimeCount() {
+            final Handler timerHandler = new Handler();
+            Runnable timer = new Runnable() {
+                public void run() {
+                    if (!gameOver){
+                        score += 15;
+                        scoreTextView.setText(String.valueOf(score));
+                        timerHandler.postDelayed(this, 5000);
+                    }
+                }
+            };
+            timerHandler.postDelayed(timer, 5000);
         }
 
         //Puts a new, random piece into the dropping position
@@ -192,7 +242,7 @@ public class MainActivity extends AppCompatActivity {
             nextPieces.remove(0);
 
             if (collidesAt(pieceOrigin.i + 1, pieceOrigin.j, rotation)) {
-                gameEnded();
+                finalizeGame();
             }
             else {
                 drawPiece();
@@ -200,16 +250,14 @@ public class MainActivity extends AppCompatActivity {
         }
 
         //Ends the game by stopping the auto drop down runnable and showing the score
-        private void gameEnded() {
+        private void finalizeGame() {
             gameOver = true;
             handler.removeCallbacksAndMessages(autoDropDown);
-            handler.postDelayed(autoDropDown, 5000);
-            Log.d("Terminado", "gameEnded: ");
+            onGameOver();
         }
 
         //Collision test for the dropping piece
         private boolean collidesAt(int i, int j, int rotation) {
-            erasePiece();
             for (Index p : Tetraminos[currentPiece][rotation]) {
                 if (board[p.i + i][p.j + j].getColor() != Color.BLACK) {
                     return true;
@@ -224,6 +272,7 @@ public class MainActivity extends AppCompatActivity {
             if (newRotation < 0) {
                 newRotation = 3;
             }
+            erasePiece();
             if (!collidesAt(pieceOrigin.i, pieceOrigin.j, newRotation)) {
                 rotation = newRotation;
             }
@@ -232,6 +281,7 @@ public class MainActivity extends AppCompatActivity {
 
         //Move the piece left or right
         public void move(int j) {
+            erasePiece();
             if (!collidesAt(pieceOrigin.i, pieceOrigin.j + j, rotation)) {
                 pieceOrigin.j += j;
             }
@@ -240,6 +290,7 @@ public class MainActivity extends AppCompatActivity {
 
         //Drops the piece one line or fixes it to the board if it can't drop
         public void dropDown() {
+            erasePiece();
             if (!collidesAt(pieceOrigin.i + 1, pieceOrigin.j, rotation)) {
                 pieceOrigin.i += 1;
                 drawPiece();
@@ -298,9 +349,11 @@ public class MainActivity extends AppCompatActivity {
                     score += 500;
                     break;
                 case 4:
+                    Toast.makeText(getApplicationContext(), "¡Que loquillo!", Toast.LENGTH_SHORT).show();
                     score += 800;
                     break;
             }
+            scoreTextView.setText(String.valueOf(score));
         }
 
         //Erases the piece before checking for collisions
@@ -315,7 +368,6 @@ public class MainActivity extends AppCompatActivity {
             for (Index p : Tetraminos[currentPiece][rotation]) {
                 board[p.i + pieceOrigin.i][p.j + pieceOrigin.j].setBackgroundColor(tetraminosColors[currentPiece]);
             }
-            scoreTextView.setText(String.valueOf(score));
         }
     }
 }
