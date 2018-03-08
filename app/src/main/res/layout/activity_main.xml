@@ -32,6 +32,7 @@
             android:layout_weight="1"
             android:background="@android:color/black"
             app:srcCompat="@android:color/black" />
+
     </LinearLayout>
 
     <GridLayout

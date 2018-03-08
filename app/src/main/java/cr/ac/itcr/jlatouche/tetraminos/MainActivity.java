@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.GridLayout;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -269,6 +270,8 @@ public class MainActivity extends AppCompatActivity {
                 Collections.shuffle(nextPieces);
             }
             currentPiece = nextPieces.get(0);
+            previewNextPiece(nextPieces.get(1));
+
             nextPieces.remove(0);
 
             if (collidesAt(pieceOrigin.i + 1, pieceOrigin.j, rotation)) {
@@ -276,6 +279,37 @@ public class MainActivity extends AppCompatActivity {
             }
             else {
                 drawPiece();
+            }
+        }
+
+        //Will draw the following piece
+        private void previewNextPiece(int nextPiece) {
+            ImageView nextPieceImage = findViewById(R.id.nextImageView);
+
+            switch (nextPiece) {
+                case 0:
+                    nextPieceImage.setImageResource(R.drawable.piece_i);
+                    break;
+                case 1:
+                    nextPieceImage.setImageResource(R.drawable.piece_j);
+                    break;
+                case 2:
+                    nextPieceImage.setImageResource(R.drawable.piece_l);
+                    break;
+                case 3:
+                    nextPieceImage.setImageResource(R.drawable.piece_o);
+                    break;
+                case 4:
+                    nextPieceImage.setImageResource(R.drawable.piece_s);
+                    break;
+                case 5:
+                    nextPieceImage.setImageResource(R.drawable.piece_t);
+                    break;
+                case 6:
+                    nextPieceImage.setImageResource(R.drawable.piece_z);
+                    break;
+                default:
+
             }
         }
 
