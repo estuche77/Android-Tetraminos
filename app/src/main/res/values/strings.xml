@@ -1,5 +1,3 @@
 <resources>
     <string name="app_name">Tetraminos</string>
-    <string name="score_string">Score</string>
-    <string name="nextPiece_string">Next tetramino</string>
 </resources>

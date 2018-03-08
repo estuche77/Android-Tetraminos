@@ -47,7 +47,7 @@
     <LinearLayout
         android:id="@+id/buttonsLayout"
         android:layout_width="match_parent"
-        android:layout_height="50dp"
+        android:layout_height="70dp"
         android:orientation="horizontal"
         android:layout_alignParentBottom="true">
 
@@ -56,32 +56,32 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:onClick="onMoveLeftClick"
-            android:text="Left" />
+            android:background="@drawable/ic_keyboard_arrow_left_black_48dp"
+            android:onClick="onMoveLeftClick" />
 
         <Button
             android:id="@+id/moveRight"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:onClick="onMoveRightClick"
-            android:text="Right" />
+            android:background="@drawable/ic_keyboard_arrow_right_black_48dp"
+            android:onClick="onMoveRightClick" />
 
         <Button
             android:id="@+id/moveDown"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:onClick="onMoveDownClick"
-            android:text="Down" />
+            android:background="@drawable/ic_keyboard_arrow_down_black_48dp"
+            android:onClick="onMoveDownClick" />
 
         <Button
             android:id="@+id/rotate"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:onClick="onRotateClick"
-            android:text="Rotate" />
+            android:background="@drawable/ic_rotate_right_black_48dp"
+            android:onClick="onRotateClick" />
     </LinearLayout>
 
 </RelativeLayout>
