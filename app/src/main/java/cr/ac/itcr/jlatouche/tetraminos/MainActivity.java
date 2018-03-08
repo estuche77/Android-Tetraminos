@@ -142,6 +142,16 @@ public class MainActivity extends AppCompatActivity {
 
         //All the color by piece
         private final int[] tetraminosColors = {
+                Color.parseColor("#00bcd4"),
+                Color.parseColor("#0d47a1"),
+                Color.parseColor("#e64a19"),
+                Color.parseColor("#fbc02d"),
+                Color.parseColor("#388e3c"),
+                Color.parseColor("#512da8"),
+                Color.parseColor("#d32f2f")
+        };
+
+        private final int[] oldTetraminosColors = {
                 Color.CYAN, Color.BLUE, Color.WHITE, Color.YELLOW, Color.GREEN, Color.MAGENTA, Color.RED
         };
 
@@ -185,7 +195,7 @@ public class MainActivity extends AppCompatActivity {
                     boardLayout.addView(squareView);
 
                     if (i == 0 || i == rowCount - 1 || j == 0 || j == columnCount - 1) {
-                        squareView.setBackgroundColor(Color.GRAY);
+                        squareView.setBackgroundColor(Color.parseColor("#7f8c8d"));
                     } else {
                         squareView.setBackgroundColor(Color.BLACK);
                     }
